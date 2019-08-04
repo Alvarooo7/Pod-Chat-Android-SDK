@@ -89,7 +89,9 @@ public class MessageDatabaseHelper {
      * Cache history
      */
     public void saveHistory(@NonNull List<CacheMessageVO> messageVOS, long threadId) {
+
         for (CacheMessageVO messageVO : messageVOS) {
+
             messageVO.setThreadVoId(threadId);
 
             long time = messageVO.getTime();
@@ -129,6 +131,7 @@ public class MessageDatabaseHelper {
     }
 
     public void saveMessage(@NonNull CacheMessageVO cacheMessageVO, long threadId) {
+
         cacheMessageVO.setThreadVoId(threadId);
 
         if (cacheMessageVO.getParticipant() != null) {
@@ -753,26 +756,7 @@ public class MessageDatabaseHelper {
             }
             if (cacheMessageVO.getParticipantId() != null) {
                 CacheParticipant cacheParticipant = messageDao.getParticipant(cacheMessageVO.getParticipantId());
-                participant = new Participant(
-                        cacheParticipant.getId(),
-                        cacheParticipant.getName(),
-                        cacheParticipant.getFirstName(),
-                        cacheParticipant.getLastName(),
-                        cacheParticipant.getImage(),
-                        cacheParticipant.getNotSeenDuration(),
-                        cacheParticipant.getContactId(),
-                        cacheParticipant.getContactName(),
-                        cacheParticipant.getContactFirstName(),
-                        cacheParticipant.getContactLastName(),
-                        cacheParticipant.getSendEnable(),
-                        cacheParticipant.getReceiveEnable(),
-                        cacheParticipant.getCellphoneNumber(),
-                        cacheParticipant.getEmail(),
-                        cacheParticipant.getMyFriend(),
-                        cacheParticipant.getOnline(),
-                        cacheParticipant.getBlocked(),
-                        cacheParticipant.getAdmin()
-                );
+                participant = cacheToParticipantMapper(cacheParticipant);
 
             }
             if (cacheMessageVO.getReplyInfoVOId() != null) {
@@ -793,26 +777,7 @@ public class MessageDatabaseHelper {
                 CacheForwardInfo cacheForwardInfo = messageDao.getForwardInfo(cacheMessageVO.getForwardInfoId());
                 if (cacheForwardInfo.getParticipantId() != null) {
                     CacheParticipant cacheParticipant = messageDao.getParticipant(cacheForwardInfo.getParticipantId());
-                    participant = new Participant(
-                            cacheParticipant.getId(),
-                            cacheParticipant.getName(),
-                            cacheParticipant.getFirstName(),
-                            cacheParticipant.getLastName(),
-                            cacheParticipant.getImage(),
-                            cacheParticipant.getNotSeenDuration(),
-                            cacheParticipant.getContactId(),
-                            cacheParticipant.getContactName(),
-                            cacheParticipant.getContactFirstName(),
-                            cacheParticipant.getContactLastName(),
-                            cacheParticipant.getSendEnable(),
-                            cacheParticipant.getReceiveEnable(),
-                            cacheParticipant.getCellphoneNumber(),
-                            cacheParticipant.getEmail(),
-                            cacheParticipant.getMyFriend(),
-                            cacheParticipant.getOnline(),
-                            cacheParticipant.getBlocked(),
-                            cacheParticipant.getAdmin()
-                    );
+                    participant = cacheToParticipantMapper(cacheParticipant);
                 }
                 if (Util.isNullOrEmpty(cacheForwardInfo.getConversationId())) {
                     conversationSummery = messageDao.getConversationSummery(cacheForwardInfo.getConversationId());
@@ -860,8 +825,12 @@ public class MessageDatabaseHelper {
      */
     @NonNull
     public List<Contact> getContacts(Integer count, Long offset) {
+
         List<Contact> contacts = new ArrayList<>();
-        List<CacheContact> cacheContacts = messageDao.getContact(count, offset);
+
+        List<CacheContact> cacheContacts = messageDao.getContacts(count, offset);
+
+
         if (cacheContacts != null && cacheContacts.size() > 0) {
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.getDefault());
             Calendar c = Calendar.getInstance();
@@ -1032,26 +1001,7 @@ public class MessageDatabaseHelper {
                     if (cacheLastMessageVO.getParticipantId() != null) {
                         cacheParticipant = messageDao.getParticipant(cacheLastMessageVO.getParticipantId());
                         if (cacheParticipant != null) {
-                            participant = new Participant(
-                                    cacheParticipant.getId(),
-                                    cacheParticipant.getName(),
-                                    cacheParticipant.getFirstName(),
-                                    cacheParticipant.getLastName(),
-                                    cacheParticipant.getImage(),
-                                    cacheParticipant.getNotSeenDuration(),
-                                    cacheParticipant.getContactId(),
-                                    cacheParticipant.getContactName(),
-                                    cacheParticipant.getContactFirstName(),
-                                    cacheParticipant.getContactLastName(),
-                                    cacheParticipant.getSendEnable(),
-                                    cacheParticipant.getReceiveEnable(),
-                                    cacheParticipant.getCellphoneNumber(),
-                                    cacheParticipant.getEmail(),
-                                    cacheParticipant.getMyFriend(),
-                                    cacheParticipant.getOnline(),
-                                    cacheParticipant.getBlocked(),
-                                    cacheParticipant.getAdmin()
-                            );
+                            participant = cacheToParticipantMapper(cacheParticipant);
                         }
 
                     }
@@ -1125,6 +1075,31 @@ public class MessageDatabaseHelper {
         return threads;
     }
 
+    @NonNull
+    private Participant cacheToParticipantMapper(CacheParticipant cacheParticipant) {
+        return new Participant(
+                cacheParticipant.getId(),
+                cacheParticipant.getName(),
+                cacheParticipant.getFirstName(),
+                cacheParticipant.getLastName(),
+                cacheParticipant.getImage(),
+                cacheParticipant.getNotSeenDuration(),
+                cacheParticipant.getContactId(),
+                cacheParticipant.getContactName(),
+                cacheParticipant.getContactFirstName(),
+                cacheParticipant.getContactLastName(),
+                cacheParticipant.getSendEnable(),
+                cacheParticipant.getReceiveEnable(),
+                cacheParticipant.getCellphoneNumber(),
+                cacheParticipant.getEmail(),
+                cacheParticipant.getMyFriend(),
+                cacheParticipant.getOnline(),
+                cacheParticipant.getBlocked(),
+                cacheParticipant.getAdmin(),
+                cacheParticipant.getRoles()
+        );
+    }
+
     public List<Thread> getThreads(long count, long offset) {
         List<Thread> threads;
         if (messageDao.getThreads(count, offset) != null) {
@@ -1145,26 +1120,7 @@ public class MessageDatabaseHelper {
                     if (cacheLastMessageVO.getParticipantId() != null) {
                         cacheParticipant = messageDao.getParticipant(cacheLastMessageVO.getParticipantId());
                         if (cacheParticipant != null) {
-                            participant = new Participant(
-                                    cacheParticipant.getId(),
-                                    cacheParticipant.getName(),
-                                    cacheParticipant.getFirstName(),
-                                    cacheParticipant.getLastName(),
-                                    cacheParticipant.getImage(),
-                                    cacheParticipant.getNotSeenDuration(),
-                                    cacheParticipant.getContactId(),
-                                    cacheParticipant.getContactName(),
-                                    cacheParticipant.getContactFirstName(),
-                                    cacheParticipant.getContactLastName(),
-                                    cacheParticipant.getSendEnable(),
-                                    cacheParticipant.getReceiveEnable(),
-                                    cacheParticipant.getCellphoneNumber(),
-                                    cacheParticipant.getEmail(),
-                                    cacheParticipant.getMyFriend(),
-                                    cacheParticipant.getOnline(),
-                                    cacheParticipant.getBlocked(),
-                                    cacheParticipant.getAdmin()
-                            );
+                            participant = cacheToParticipantMapper(cacheParticipant);
                         }
 
                     }
@@ -1269,26 +1225,7 @@ public class MessageDatabaseHelper {
                     CacheLastMessageVO cacheLastMessageVO = threadVo.getLastMessageVO();
                     if (cacheLastMessageVO.getParticipantId() != null) {
                         cacheParticipant = messageDao.getParticipant(cacheLastMessageVO.getParticipantId());
-                        participant = new Participant(
-                                cacheParticipant.getId(),
-                                cacheParticipant.getName(),
-                                cacheParticipant.getFirstName(),
-                                cacheParticipant.getLastName(),
-                                cacheParticipant.getImage(),
-                                cacheParticipant.getNotSeenDuration(),
-                                cacheParticipant.getContactId(),
-                                cacheParticipant.getContactName(),
-                                cacheParticipant.getContactFirstName(),
-                                cacheParticipant.getContactLastName(),
-                                cacheParticipant.getSendEnable(),
-                                cacheParticipant.getReceiveEnable(),
-                                cacheParticipant.getCellphoneNumber(),
-                                cacheParticipant.getEmail(),
-                                cacheParticipant.getMyFriend(),
-                                cacheParticipant.getOnline(),
-                                cacheParticipant.getBlocked(),
-                                cacheParticipant.getAdmin()
-                        );
+                        participant = cacheToParticipantMapper(cacheParticipant);
                     }
                     if (cacheLastMessageVO.getReplyInfoVOId() != null) {
                         cacheReplyInfoVO = messageDao.getReplyInfo(cacheLastMessageVO.getReplyInfoVOId());
@@ -1386,26 +1323,7 @@ public class MessageDatabaseHelper {
                     CacheLastMessageVO cacheLastMessageVO = threadVo.getLastMessageVO();
                     if (cacheLastMessageVO.getParticipantId() != null) {
                         cacheParticipant = messageDao.getParticipant(cacheLastMessageVO.getParticipantId());
-                        participant = new Participant(
-                                cacheParticipant.getId(),
-                                cacheParticipant.getName(),
-                                cacheParticipant.getFirstName(),
-                                cacheParticipant.getLastName(),
-                                cacheParticipant.getImage(),
-                                cacheParticipant.getNotSeenDuration(),
-                                cacheParticipant.getContactId(),
-                                cacheParticipant.getContactName(),
-                                cacheParticipant.getContactFirstName(),
-                                cacheParticipant.getContactLastName(),
-                                cacheParticipant.getSendEnable(),
-                                cacheParticipant.getReceiveEnable(),
-                                cacheParticipant.getCellphoneNumber(),
-                                cacheParticipant.getEmail(),
-                                cacheParticipant.getMyFriend(),
-                                cacheParticipant.getOnline(),
-                                cacheParticipant.getBlocked(),
-                                cacheParticipant.getAdmin()
-                        );
+                        participant = cacheToParticipantMapper(cacheParticipant);
                     }
                     if (cacheLastMessageVO.getReplyInfoVOId() != null) {
                         cacheReplyInfoVO = messageDao.getReplyInfo(cacheLastMessageVO.getReplyInfoVOId());
@@ -1585,7 +1503,9 @@ public class MessageDatabaseHelper {
      */
     @NonNull
     public List<Participant> getThreadParticipant(long offset, long count, long threadId) {
+
         List<Participant> participants = new ArrayList<>();
+
         List<CacheThreadParticipant> listCtp = messageDao.getAllThreadParticipants(offset, count, threadId);
         if (listCtp == null) {
             return participants;
@@ -1601,28 +1521,12 @@ public class MessageDatabaseHelper {
                     long participantId = threadParticipant.getParticipantId();
 
                     if (expireDate.compareTo(nowDate) < 0) {
-                        messageDao.deleteCacheThreadParticipnat(participantId);
+                        messageDao.deleteCacheThreadParticipant(participantId);
                     } else {
+
                         CacheParticipant cParticipant = messageDao.getParticipant(participantId);
-                        Participant participant = new Participant(
-                                cParticipant.getId(),
-                                cParticipant.getName(),
-                                cParticipant.getFirstName(),
-                                cParticipant.getLastName(),
-                                cParticipant.getImage(),
-                                cParticipant.getNotSeenDuration(),
-                                cParticipant.getContactId(),
-                                cParticipant.getContactName(),
-                                cParticipant.getContactFirstName(),
-                                cParticipant.getContactLastName(),
-                                cParticipant.getSendEnable(),
-                                cParticipant.getReceiveEnable(),
-                                cParticipant.getCellphoneNumber(),
-                                cParticipant.getEmail(),
-                                cParticipant.getMyFriend(),
-                                cParticipant.getOnline(),
-                                cParticipant.getBlocked(),
-                                cParticipant.getAdmin());
+
+                        Participant participant = cacheToParticipantMapper(cParticipant);
                         participants.add(participant);
                     }
 
